@@ -4,7 +4,7 @@
 namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Shorturl;
-use App\Exceptions\PseudoCrypt;
+use App\Domain\PseudoCrypt;
 
 class ShorturlController extends Controller
 {
