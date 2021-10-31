@@ -2,6 +2,7 @@
 
 
 namespace App\Http\Controllers;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Shorturl;
 use App\Domain\PseudoCrypt;
@@ -14,15 +15,15 @@ class ShorturlController extends Controller
      *
      * @return string
      */
-    public function createShorturl()
+    public function createShorturl(Request $request)
     {
-        if(!isset($_GET['link'])){
+        if(!$request->get('link')){
             return false;
         }
 
         $shorturl = new Shorturl();
-        $shorturl->oldurl = $_GET['link'];
-        $md = $_GET['link'].time();
+        $shorturl->oldurl = $request->get('link');
+        $md = $request->get('link').time();
         $shorturl->shorturl = PseudoCrypt::hash($md, 7);
         $shorturl->save();
 
@@ -35,19 +36,15 @@ class ShorturlController extends Controller
      *
      * @return void
      */
-    public function getShorturl()
+    public function getShorturl(Request $request)
     {
-
-        $short_url = "";
-        $short_url = explode('/',$_SERVER['REQUEST_URI'])[1];
+        $short_url = explode('/',$request->getPathInfo())[1];
         $old_url = Shorturl::where('shorturl',$short_url)->first();
 
         if($old_url) {
-            header("HTTP/1.1 301 Moved Permanently");
-            header("Location: ".$old_url->oldurl);
+            redirect($old_url->oldurl);
         }else {
-            header("HTTP/1.1 301 Moved Permanently");
-            header("Location: /");
+            redirect("/");
         }
 
     }
